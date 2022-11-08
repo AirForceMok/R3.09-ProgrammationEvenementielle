@@ -1,0 +1,16 @@
+import time
+
+def task(i):
+    print(f"Task {i} starts")
+    time.sleep(1)
+    print(f"Task {i} ends")
+
+start = time.perf_counter()
+
+task(1)
+task(2)
+
+end = time.perf_counter()
+print(f"Tasks ended in {round(end -start, 2)} second(s)")
+
+#Ici le code se déroulera de manière synchrone, c'est à dire que le programme attends l'accomplissement de la première tache avant d'exécuter la deuxième, ce qui fait qu'on aura 2 secondes.
