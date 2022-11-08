@@ -1,19 +1,25 @@
+import sys
 import time
-def task(i):
-#Les tâches sont utilisées pour planifier des coroutines simultanément.
-    print(f"Task {i} starts")
-    time.sleep(1)
-#La méthode de temps Python sleep() suspend l'exécution pendant le nombre de secondes donné.
-    print(f"Task {i} ends")
-    
-start = time.perf_counter() 
 
-#La fonction perf_counter() renvoie toujours la valeur flottante du temps en secondes. 
-#Renvoie la valeur (en fractions de secondes) d’un compteur de performance,
-#c’est-à-dire une horloge avec la plus haute résolution disponible pour mesurer une courte durée     
+def main():
+    def task(i):
+        # Les tâches sont utilisées pour planifier des coroutines simultanément.
+        print(f"Task {i} starts")
+        time.sleep(1)
+        # La méthode de temps Python sleep() suspend l'exécution pendant le nombre de secondes donné.
+        print(f"Task {i} ends")
 
-task(1)
+    start = time.perf_counter()
 
-end = time.perf_counter()
+    # La fonction perf_counter() renvoie toujours la valeur flottante du temps en secondes.
+    # Renvoie la valeur (en fractions de secondes) d’un compteur de performance,
+    # c’est-à-dire une horloge avec la plus haute résolution disponible pour mesurer une courte durée
 
-print(f"Tasks ended in {round(end -start, 2)} second(s)")
+    task(1)
+
+    end = time.perf_counter()
+
+    print(f"Tasks ended in {round(end - start, 2)} second(s)")
+
+if __name__ == "__main__":
+        sys.exit(main())
