@@ -1,27 +1,30 @@
-import threading
+import sys
 import time
+import threading
 
-def task(i):
-    print(f"Task {i} starts")
-    time.sleep(1)
-    print(f"Task {i} ends")
+def main():
+        def task(i):
+            print(f"Task {i} starts")
+            time.sleep(1)
+            print(f"Task {i} ends")
+
+        start = time.perf_counter()
+        start = time.perf_counter()
+        t1 = threading.Thread(target=task, args=[1])
+        t1.start()
+
+        t2 = threading.Thread(target=task, args=[2])
+        t2.start()
+
+        t1.join()  # j'attends la fin de la thread
+        t2.join()  # j'attends la fin de la thread
+
+        # Le thread principal qui appelle t1.join() s'arrêtera et attendra que le thread t1 se termine.
+        # Le thread t2 s'exécute en parallèle et n'est pas du tout affecté par t1 ou l'appel t1.join().
+
+        end = time.perf_counter()
+        print(f"Tasks ended in {round(end - start, 2)} second(s)")
 
 
-start = time.perf_counter()
-start = time.perf_counter()
-t1 = threading.Thread(target=task, args=[1])
-t1.start()
-
-t2 = threading.Thread(target=task, args=[2])
-t2.start()
-
-t1.join() # j'attends la fin de la thread
-t2.join() # j'attends la fin de la thread
-
-# Le thread principal qui appelle t1.join() s'arrêtera et attendra que le thread t1 se termine. 
-# Le thread t2 s'exécute en parallèle et n'est pas du tout affecté par t1 ou l'appel t1.join().
-
-
-
-end = time.perf_counter()
-print(f"Tasks ended in {round(end - start, 2)} second(s)")
+if __name__ == "__main__":
+            sys.exit(main())
