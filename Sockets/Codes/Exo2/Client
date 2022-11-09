@@ -1,0 +1,18 @@
+import socket
+import sys
+
+def main():
+
+    message = "donc je suis"
+    host = 'localhost'
+    port = 5000
+
+    client_socket = socket.socket()
+    client_socket.connect((host, port))
+    client_socket.send(message.encode())
+    data = client_socket.recv(1024).decode()
+    print(data)
+    client_socket.close()
+
+if __name__ == '__main__':
+    sys.exit(main())
