@@ -1,0 +1,29 @@
+import sys
+import socket
+
+host = 'localhost'
+port = 5000
+
+#Création du socket
+socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+
+socket.bind((host, port))
+socket.listen(1)
+
+#Tant qu'il n'y a pas de connexion le script s'arrete
+client, ip = socket.accept()
+print("Le client qui possède l'ip :",ip,"s'est connecté")
+
+while True:
+    requete_client = client.recv(500)
+    requete_client = requete_client.decode('utf-8')
+    print(requete_client)
+    if not requete_client : # Si la connexion est perdu
+        print("CLOSE")
+        break
+    msg = input ("->")
+    msg = msg.encode("utf-8")
+    client.send(msg)
+
+    client.close()
+    socket.close()
