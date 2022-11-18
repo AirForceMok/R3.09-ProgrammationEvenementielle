@@ -1,0 +1,37 @@
+import sys
+import socket
+
+host = 'localhost'
+port = 15090
+
+#Création du socket
+socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+socket.bind((host, port))
+socket.listen(1)
+
+msg=""
+while msg != "arret":
+    print("En attente d'un client")
+    client, ip = socket.accept()
+    print("Le client possédant l'adresse ip :",ip,"s'est connecté")
+    msg=""
+    while msg != "arret" and msg != "bye":
+        print('En attente du message du client')
+        requete_client = client.recv(500).decode()
+
+        if requete_client != "bye":
+            #requete_client = requete_client.decode('utf-8')
+            print(f'From client> {requete_client}')
+            msg = input("->")
+            #msg = msg.encode("utf-8")
+            client.send(msg.encode())
+        else:
+            msg = "bye"
+
+    client.close()
+    print("Le client s'est déconnecté")
+
+print('Fin du serveur')
+socket.close()
+
+
