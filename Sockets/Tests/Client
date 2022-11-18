@@ -1,0 +1,19 @@
+import socket
+import sys
+
+host = 'localhost'
+port = 5000
+
+#Creation du socket
+socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+
+socket.connect((host, port))
+
+while True:
+    msg = input ("->")
+    msg = msg.encode("utf-8")
+    socket.send(msg)
+
+    requete_serveur = socket.recv(500)
+    requete_serveur = requete_serveur.decode("utf-8")
+    print(requete_serveur)
