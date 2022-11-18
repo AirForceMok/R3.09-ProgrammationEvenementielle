@@ -25,5 +25,5 @@ while True:
     msg = msg.encode("utf-8")
     client.send(msg)
 
-    client.close()
-    socket.close()
+client.close()
+socket.close()
