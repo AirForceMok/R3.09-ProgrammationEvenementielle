@@ -1,0 +1,55 @@
+import sys
+from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QLineEdit, QMainWindow, QGridLayout, QComboBox
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        widget = QWidget()
+        self.setCentralWidget(widget)
+
+        grid = QGridLayout()
+
+        widget.setLayout(grid)
+
+        lab = QLabel("Température")
+        lab2 = QLabel("°C")
+        lab3 = QLabel("Conversion")
+        lab4 = QLabel("K")
+        self.__champ = QLineEdit("")
+        self.__text1 = QLineEdit("")
+        self.__label1 = QLabel("")
+        lab5 = QLabel("")
+        convertir = QPushButton("Convertir")
+
+        combo = QComboBox(self)
+        combo.addItem("°C -> K")
+        combo.addItem("K -> °C")
+
+        # Ajouter les composants au grid ayout
+
+        grid.addWidget(lab, 0, 1)
+        grid.addWidget(lab2, 0, 3)
+        grid.addWidget(lab3, 9, 1)
+        grid.addWidget(lab4, 9, 3)
+        grid.addWidget(convertir, 5 , 2)
+        grid.addWidget(self.__champ, 0,2)
+        grid.addWidget(self.__text1, 9, 2)
+        grid.addWidget(self.__label, 5, 0)
+        grid.addWidget(combo, 5, 4)
+        grid.addWidget(lab5, 10,1)
+
+        convertir.clicked.connect(self.__actionConvertir)
+        self.setWindowTitle("Conversion de Température")
+
+
+    def __actionConvertir(self):
+        texte_a_copier = self.__champ.text()
+        self.label5.setText(texte_a_copier)
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    app.exec()
