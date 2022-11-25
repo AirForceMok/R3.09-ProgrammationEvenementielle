@@ -1,0 +1,15 @@
+    if msg == "OS":
+        msg = platform.platform()
+        socket.send(msg.encode())
+
+    if msg =="CPU":
+        msg = (platform.processor())
+        socket.send(msg.encode())
+
+    if msg == "IP":
+        msg = socket.gethostbyname(socket.gethostname())
+        socket.send(msg.encode())
+
+    if msg=='Hostname':
+        msg =(socket.gethostname())
+        socket.send(msg.encode())
