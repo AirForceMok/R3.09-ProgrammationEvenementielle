@@ -8,42 +8,38 @@ port = 15090
 socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 socket.bind((host, port))
 socket.listen(1)
-
 msg=""
-while msg != "arret":
-    print("En attente d'un client")
-    client, ip = socket.accept()
-    print("Le client possédant l'adresse ip :",ip,"s'est connecté")
-    msg=""
+requete_client = client.recv(500).decode()
 
-def ecoute():
-    while msg != "arret" and msg != "bye":
-        try:
-            print('En attente du message du client')
-            requete_client = client.recv(500).decode()
+def main():
+    
+    while msg != "arret":
+        print("En attente d'un client")
+        client, ip = socket.accept()
+        print("Le client possédant l'adresse ip :",ip,"s'est connecté")
+        msg=""
+    
+    def ecoute():
+        while msg != "arret" and msg != "bye":
+            try:
+                print('En attente du message du client')
+                requete_client = client.recv(500).decode()
+                else:
+                    client.close()
+                    print("Le client s'est déconnecté")
+                    print('Fin du serveur')
+            except socket.timeout
+                print('Fin du serveur')
+    
+    def envoi():
+        while requete_client != "bye":
+            try:
+                print(f'From client> {requete_client}')
+                msg = input("->")
+                client.send(msg.encode())
             else:
+                msg = "bye"
                 client.close()
                 print("Le client s'est déconnecté")
-                print('Fin du serveur')
-        except socket.timeout
-            print('Fin du serveur')
 
-def envoi()
-    while requete_client != "bye":
-        try:
-            print(f'From client> {requete_client}')
-            msg = input("->")
-            client.send(msg.encode())
-        else:
-            msg = "bye"
-            client.close()
-            print("Le client s'est déconnecté")
-
-def start_listen(self):
-    t = threading.Thread(target=self.listen())
-    t.start()
-    # t.join()
-    print
-    'started listen'
-    
 if __name__ == '__main__'
