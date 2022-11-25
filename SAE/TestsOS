@@ -1,0 +1,40 @@
+import platform
+import os,sys
+
+
+def is_linux():
+    try:
+        if platform.system() == "Linux":
+            return True
+    except:
+        return False
+
+def is_windows():
+    try:
+        if platform.system() == "Windows":
+            return True
+    except:
+        return False
+
+def is_mac():
+    try:
+        if platform.system() == "Mac":
+            return True
+    except:
+        return False
+
+def name():
+
+    if is_linux():
+        return "Linux"
+
+    if is_windows():
+        return "Windows"
+
+    if is_mac():
+        return "Mac"
+
+if __name__ == "__main__":
+    sys.exit(name())
+
+
