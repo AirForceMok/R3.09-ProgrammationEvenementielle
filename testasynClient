@@ -1,0 +1,43 @@
+import platform
+import socket
+
+host = 'localhost'
+port = 15090
+
+def socket():
+    #Creation du socket
+    socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+    socket.connect((host, port))
+    msg=""
+
+def discussion():
+    while msg != "arret" and msg != "bye":
+        msg = input("->")
+        socket.send(msg.encode())
+
+        if msg != "bye":
+            print('En attente du message du serveur')
+            requete_serveur = socket.recv(500).decode()
+            print(f"From server : {requete_serveur}")
+            msg = requete_serveur
+
+def commandes():
+    if msg == "OS" or msg == "os":
+        msg = platform.system()
+        socket.send(msg.encode())
+
+    if msg == "CPU" or msg == cpu:
+        msg = (platform.processor())
+        socket.send(msg.encode())
+
+    if msg == "IP":
+        msg = socket.gethostbyname(socket.gethostname())
+        socket.send(msg.encode())
+
+    if msg=='Hostname':
+        msg =(socket.gethostname())
+        socket.send(msg.encode())
+
+
+print('Fin du client')
+socket.close()
