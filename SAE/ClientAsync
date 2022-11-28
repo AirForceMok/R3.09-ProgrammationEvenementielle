@@ -1,0 +1,36 @@
+import socket
+import sys
+from threading import Thread
+
+host = 'localhost'
+port = 15093
+
+
+def Envoi_MSG(socket):
+    msg = ""
+    while msg != "Kill" and msg != "Disconnect":
+        msg = input("Client ->")
+        #msg = msg.encode("utf-8")
+        socket.send(msg.encode())
+
+def Reception_MSG(socket):
+    msg = ""
+    while msg != "Disconect":
+        print('En attente du message du serveur')
+        requete_serveur = socket.recv(500).decode()
+        #requete_serveur = requete_serveur.decode("utf-8")
+        print(f"From server : {requete_serveur}")
+        msg = requete_serveur
+
+
+if __name__ == '__main__':
+    # Creation du socket
+    socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    socket.connect((host, port))
+    
+    """On lance les threads"""
+    envoi = Thread(target=Envoi_MSG, args=[socket])
+    recep = Thread(target=Reception_MSG, args=[socket])
+    envoi.start()
+    recep.start()
+    recep.join()
