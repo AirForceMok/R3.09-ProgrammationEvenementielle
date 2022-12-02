@@ -1,0 +1,72 @@
+import socket
+import psutil
+from threading import Thread
+import platform
+import os
+host = 'localhost'
+port = 15093
+hostname=socket.gethostname()
+IPAddr=socket.gethostbyname(hostname)
+load1, load5, load15 = psutil.getloadavg()
+cpu_usage = (load15 / os.cpu_count()) * 100
+
+def Envoi_MSG(socket):
+    msg = ""
+    while msg != "Kill" and msg != "Disconnect":
+        msg = input("Client ->")
+        socket.send(msg.encode())
+
+    print("Envoi > Fin de réception")
+
+def Reception_MSG(socket):
+    msg = ""
+    requete_serveur = ""
+    while requete_serveur != "Disconnect":
+        print('En attente du message du serveur')
+        requete_serveur = socket.recv(500).decode()
+        print(f"From server : {requete_serveur}")
+        msg = requete_serveur
+        print("Reception => Fin de réception")
+
+        if requete_serveur == "OS" or requete_serveur == "os":
+            msg = platform.system()
+            print(msg)
+            socket.send(msg.encode())
+
+        elif requete_serveur == "CPU" or requete_serveur == "cpu":
+            msg = (platform.processor())
+            print(msg)
+            socket.send(msg.encode())
+
+        elif requete_serveur == "IP":
+            msg = IPAddr
+            print(msg)
+            socket.send(msg.encode())
+
+        elif requete_serveur == 'Hostname':
+            msg = hostname
+            print(msg)
+            socket.send(msg.encode())
+
+        load1, load5, load15 = psutil.getloadavg()
+        cpu_usage = (load15 / os.cpu_count()) * 100
+
+        elif requete_serveur == 'RAM':
+        msg = cpu_usage
+        print(msg)
+        client.send(msg.encode())
+
+
+if __name__ == '__main__':
+    # Creation du socket
+    socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    socket.connect((host, port))
+
+    """On lance les threads"""
+    envoi = Thread(target=Envoi_MSG, args=[socket])
+    recep = Thread(target=Reception_MSG, args=[socket])
+    envoi.start()
+    recep.start()
+    recep.join()
+
+    #envoi.join()
