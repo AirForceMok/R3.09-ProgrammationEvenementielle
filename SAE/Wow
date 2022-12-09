@@ -1,0 +1,118 @@
+import socket, json, select
+class Server():
+    def __init__(self):
+        self.connected_sockets = []# for saving sockets
+        self.connected_clients = {}# for saving sockets and related usernames
+        self.password = '21709'
+        self.server_name = 'SERVER1'
+
+    def start(self, host, port):
+        # create the socket, AF_INET == ipv4, SOCK_STREAM == TCP
+        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.server_socket.bind( (host, port) )
+        self.connected_sockets.append( self.server_socket )
+        self.connected_clients[self.server_name] = self.server_socket
+        self.server_socket.listen()
+        self.connect_clients()
+
+    def connect_clients(self):
+        next_msg = b''
+        while True:
+            read_sockets, _, exception_sockets = select.select(self.connected_sockets, [], self.connected_sockets)
+            for socket in read_sockets:
+                if socket == self.server_socket:
+                    #new connecttion
+                    client_socket, address = self.server_socket.accept()
+                    from_client = client_socket
+                    msg, next_msg = self.receive_data( from_client )
+                    data = json.loads(msg)['data']
+                    username = data['username']
+                    password = data['password']
+                    from_user = self.server_name
+                    to_user = username
+                    BCC = self.server_socket
+                    msg_type = "string"
+                    if username in self.connected_clients:
+                        self.transfer_data( f"username {username} is not valid, try again", msg_type, from_user, to_user, BCC )
+                        client_socket.close()
+                    else:
+                        if ( password == self.password ):
+                            self.connected_sockets.append( client_socket )
+                            self.connected_clients[username] = client_socket
+                            self.transfer_data( 'password was correct, wellcome', msg_type, from_user, to_user, BCC )
+                            print(f"Connection from {address} has been established.")
+                            #send welcome phrase to client just joined from the server
+                            self.transfer_data( "Hey there!!! it's a json", msg_type, from_user, to_user, BCC )
+                            self.transfer_data( "Wellcome to this server", msg_type, from_user, to_user, BCC )
+                            self.transfer_data( "here you can", msg_type, from_user, to_user, BCC )
+                            self.transfer_data( "connect to others", msg_type, from_user, to_user, BCC )
+                        else:
+                            self.transfer_data( "password was incorrect, sorry", msg_type, from_user, client_socket, BCC )
+                            client_socket.close()
+                else:
+                    #old connection and receive_message from them
+                    for user,user_socket in self.connected_clients.items():
+                        if user_socket == socket:
+                            username_related_to_socket = user
+                            break
+                    try:
+                        msg,next_msg = self.receive_data(socket,next_msg)
+                        msg = json.loads(msg)
+                        from_user = msg['from_user']
+                        to_user = msg['to_user']
+                        if to_user != self.server_name:
+                            self.transfer_data(msg['data'], msg['type'], msg['from_user'], msg['to_user'], msg['BCC'] )
+                        else:
+                            print( f"{msg['from_user']}: \x1b[6;30;42m {msg['data']} \x1b[0m" )
+                    except:
+                        print(f'\n client \x1b[6;30;42m {username_related_to_socket} \x1b[0m disconnected \n')
+                        self.connected_sockets.remove( socket )
+                        del self.connected_clients[username_related_to_socket]
+
+    def receive_data(self, from_user, next_msg=b""):
+        from_client = from_user
+        full_msg = next_msg
+        while True:
+            msg = from_client.recv(7)
+            try:# because the Ӛ has length of 2, so it may happen that, only one of them exist in the msg received
+                index = msg.decode("utf-8").find('Ӛ')
+            except:
+                msg += from_client.recv(1)
+                index = msg.decode("utf-8").find('Ӛ')
+            if ( (index != -1 ) or (len(msg) <= 0) ):
+                full_msg += msg[:index]
+                next_msg = msg[index+2:]
+                break
+            else:
+                full_msg += msg
+        full_msg = full_msg.decode("utf-8")
+        return(full_msg, next_msg)
+
+    def transfer_data(self, msg, msg_type, from_user, to_user, BCC):
+        from_client = self.connected_clients[from_user]
+        if type(to_user) is str:
+            try:
+                to_client = self.connected_clients[to_user]
+                result = True
+            except:
+                msg = f"{to_user} is offline. try later"
+                to_client = self.connected_clients[from_user]
+                to_user = from_user
+                from_user = self.server_name
+                result = False
+        else:
+            to_client = to_user
+            to_user = from_user
+            from_user = self.server_name
+            result = False
+        if msg_type == 'string':
+            msg = msg.strip()
+        msg = {'type':msg_type, 'size':len(msg), 'data':msg, 'from_user':from_user, 'to_user':to_user, 'BCC':str(BCC), 'result':result}
+        # turn a dictionary into a string to transfere with socket
+        data_string = json.dumps(msg)
+        to_client.send( bytes(data_string,"utf-8") )
+        to_client.send( bytes('Ӛ',"utf-8") )
+
+server = Server()
+server.start(host='127.0.0.1', port=1234)
