@@ -1,0 +1,119 @@
+import socket
+from threading import Thread
+import sys
+from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QLineEdit, QMainWindow, QGridLayout, QComboBox, QVBoxLayout, QTextEdit, QGroupBox
+
+class Serveur():
+    def start(self, host, port):
+        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_socket.bind((host, port))
+        self.connected_sockets.append(self.server_socket)
+        self.server_socket.listen()
+        self.connect_clients()
+
+
+    def Reception_MSG(client):
+        print("Debut de réception du serveur")
+        requete_client = ""
+        while requete_client != "Disconnect":
+            print("En attente d'un message")
+            requete_client = client.recv(500).decode()
+            # time.sleep(1)
+            # requete_client = "Disconnect"
+            print(f'Message du client: {requete_client}\n')
+
+
+    def accepts(Reception_MSG):
+        msg = ""
+        while msg != "deco-server":
+            if socket == self.server_socket:
+                # new connecttion
+                client_socket, address = self.server_socket.accept()
+                from_client = client_socket
+
+    class MainWindow(QMainWindow):
+        def __init__(self):
+            super().__init__()
+
+            self.setWindowTitle("Le serveur de tchat")
+            widget = QWidget()
+            self.setCentralWidget(widget)
+            widget.resize(250,250)
+
+            grid = QGridLayout()
+            layout = QVBoxLayout()
+
+            widget.setLayout(grid)
+
+
+            self.__IPBox = QGroupBox("IP")
+            grid.addWidget(self.__IPBox, 0, 0)
+            self.__IPLineEdit = QLineEdit()
+            self.__IPLineEdit.setText("0.0.0.0")
+            grid.addWidget(self.__IPLineEdit, 0, 2)
+
+            self.__portBox = QGroupBox("Port")
+            grid.addWidget(self.__portBox, 3, 0)
+            self.__portLineEdit = QLineEdit()
+            self.__portLineEdit.setText("10000")
+            grid.addWidget(self.__portLineEdit, 3, 2)
+
+            if port == "" or not port.isnumeric():
+                self.portLineEdit.setText("10000")
+                self.connStatus.setText("Le format du port est invalide")
+                return
+            else:
+                port = int(port)
+            try:
+                self.conn.connect((IP, port))
+            except:
+                self.connStatus.setText("La connexion a été refusée")
+                self.conn = socket.socket()
+                return
+
+            self.__clientBox = QGroupBox("Nombre de clients maximum")
+            grid.addWidget(self.__clientBox, 6, 0)
+            self.__clientLineEdit = QLineEdit()
+            self.__clientLineEdit.setText("5")
+            grid.addWidget(self.__clientLineEdit, 6, 2)
+
+
+            self.textEdit = QTextEdit()
+            self.textEdit.setEnabled(False)
+            grid.addWidget(self.textEdit, 20, 0, 20, 3)
+
+
+            self.btnPress0 = QPushButton("Démarrage du serveur")
+            grid.addWidget(self.btnPress0, 10 , 0, 10, 3)
+            self.btnPress0.clicked.connect(self.btnPress0_Clicked)
+
+            self.btnPress1 = QPushButton("Quitter")
+            grid.addWidget(self.btnPress1, 50, 0, 50, 3)
+            self.btnPress1.clicked.connect(self.btnPress1_Clicked)
+
+
+
+        def btnPress0_Clicked(self):
+            self.btnPress0 = QPushButton("Arrêt du serveur")
+
+        def btnPress1_Clicked(self, event):
+                fermeture = QMessageBox()
+                fermeture.setText("Voulez vous quittez ?")
+                fermeture.setStandardButtons(QMessageBox.Oui | QMessageBox.Annuler)
+                fermeture = fermeture.exec()
+                if close == QMessageBox.Oui:
+                    self.table_widget.disconnect_server()  # disconnect to server before exit
+                    event.accept()
+                else:
+                    event.ignore()
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    app.exec()
+
+    serveur = Serveur()
+    serveur.start(host='127.0.0.1', port=10000)
