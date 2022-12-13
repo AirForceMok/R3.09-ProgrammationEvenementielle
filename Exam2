@@ -1,0 +1,93 @@
+from Tkinter import *
+import csv
+import socket
+import sys
+import json
+from thread import *
+import threading
+
+root = Tk()
+
+#------------Server Config------
+
+HOST = ''   
+PORT = 8888 
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #test
+print 'Socket created'
+
+#Bind socket to local host and port
+try:
+    s.bind((HOST, PORT))
+except socket.error as msg:
+    print 'Bind failed. Error Code : ' + str(msg[0]) + ' Message: ' + msg[1]
+    sys.exit()
+
+print 'Socket bind complete'
+
+#Start listening on socket
+s.listen(10)
+print 'Socket now listening'
+
+#------------Functions---------
+
+
+# a lot of functions...       
+
+
+def clientthread(conn):
+
+    conn.send('CONNECTED \n')
+    #conn.send(json.dumps(tasksA))
+    station = ""
+
+
+    while True:
+        print "Entered loop" #
+
+        databytes = conn.recv(1024)
+        if not databytes: break
+
+        data = databytes.decode("utf-8")
+        print "Client: " + data
+
+
+        if data =='STATION_A':
+            station = "Station A"
+            print "Connected to: " + station
+            conn.send(json.dumps(tasksA))
+
+        #some more if-clauses
+
+
+    conn.close()
+
+def runServer():
+    while True:
+        conn, addr = s.accept()
+        #conn.setblocking(0)
+        print 'Connected with ' + addr[0] + ':' + str(addr[1])
+
+        #start new thread takes 1st argument as a function name to be run, second is the tuple of arguments to the function.
+        start_new_thread(clientthread ,(conn,))
+        root.after(100, runServer)
+    s.close()
+
+
+
+#------------GUI-----------------------
+
+root.geometry("1024x768")
+root.minsize(width="1024", height="768")
+root.title("FTS v04")
+
+#... left out most of the gui stuff... just too much code
+
+
+
+loadTasks()   
+thread = threading.Thread(target = runServer)
+thread.deamon = True
+thread.start()
+root.mainloop()
