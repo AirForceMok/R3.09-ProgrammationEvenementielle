@@ -1,0 +1,78 @@
+from socket import AF_INET, SOCK_STREAM , socket
+from threading import Thread
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QMainWindow, QComboBox, QDialog, QMessageBox, QTabWidget, QVBoxLayout, QPlainTextEdit, QTextEdit, QTableWidget,QTableWidgetItem, QHeaderView, QAbstractItemView
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QLineEdit, QMainWindow, QGridLayout, QComboBox, QVBoxLayout, QTextEdit, QGroupBox
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Invite de commandes")
+        widget = QWidget()
+        self.setCentralWidget(widget)
+        widget.resize(250,250)
+
+        grid = QGridLayout()
+        layout = QVBoxLayout()
+
+        widget.setLayout(grid)
+
+        self.__IPBox = QGroupBox("IP")
+        grid.addWidget(self.__IPBox, 0,  0)
+        self.__IPLineEdit = QLineEdit()
+        self.__IPLineEdit.setText("127.0.0.1")
+        grid.addWidget(self.__IPLineEdit, 0 ,2 )
+
+        self.__portBox = QGroupBox("Port")
+        grid.addWidget(self.__portBox, 3, 0)
+        self.__portLineEdit = QLineEdit()
+        self.__portLineEdit.setText("15091")
+        grid.addWidget(self.__portLineEdit, 3, 2)
+
+        self.__message = QLineEdit()
+        self.__message.setText("Inserez un message")
+        grid.addWidget(self.__message, 25, 0)
+        self.__envoyer = QPushButton("Envoyer le message")
+        grid.addWidget(self.__envoyer, 25, 2)
+        self.__envoyer.clicked.connect(self.envoyer)
+
+        self.__connexion = QPushButton("Connexion au serveur")
+        grid.addWidget(self.__connexion, 4,0)
+        self.__connexion.clicked.connect(self.connexion)
+
+        self.__btnPress1 = QPushButton("Quitter")
+        grid.addWidget(self.__btnPress1, 4,2)
+        self.__btnPress1.clicked.connect(self.btnPress1_Clicked)
+
+        self.textEdit = QTextEdit()
+        self.textEdit.setEnabled(False)
+        grid.addWidget(self.textEdit, 20, 0, 20, 3)
+
+    def connexion(self):
+        self.__client_socket = socket.socket()
+        IP = self.__IPLineEdit.text()
+        port = self.__portLineEdit.text()
+        self.__client_socket.connect((IP, port))
+
+    def envoyer(self):
+        msg = self.__message.setText()
+        socket.send(msg.encode())
+
+    def btnPress1_Clicked(self, event):
+                fermeture = QMessageBox()
+                fermeture.setText("Voulez vous quittez ?")
+                fermeture.setStandardButtons(QMessageBox.Oui | QMessageBox.Annuler)
+                fermeture = fermeture.exec()
+                if close == QMessageBox.Oui:
+                    self.table_widget.disconnect_server()  # disconnect to server before exit
+                    event.accept()
+                else:
+                    event.ignore()
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    app.exec()
