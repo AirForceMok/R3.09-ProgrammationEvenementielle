@@ -1,0 +1,106 @@
+from threading import Thread
+import psutil
+import os
+import socket
+import sys
+import time
+import platform
+import subprocess
+
+Host = 'localhost'
+Port = 15091
+
+""" Ouverture du server_socket """
+
+def Ouverture_server_socket():
+    requete_client = client.recv(500)
+    while requete_client != "Kill":
+        requete_client = client.recv(500)
+        server_socket.bind(Host, Port)
+        server_socket.listen(1)
+
+def accepte_connexion():
+    requete_client = client.recv(500)
+    while requete_client != "Kill" and requete_client != "Reset":
+        print("En attente d'un client")
+        client, ip = server_socket.accept()
+        print("Le client possédant l'adresse ip :", ip, "s'est connecté")
+
+def Envoi_MSG(client):
+    requete_client =""
+    while requete_client.lower() != "disconnect" and "kill" and "reset":
+        msg = input("Serveur > ")
+        msg = msg.encode()
+        client.send(msg)
+
+def Reception_MSG(client):
+    print("Debut de réception du serveur")
+    requete_client = ""
+
+    while requete_client.lower() != "disconnect" and "kill" and "reset":
+        requete_client = client.recv(500).decode()
+        print(f'Message du client: {requete_client}\n')
+
+        if requete_client.lower() == "os":
+            msg = platform.system()
+            client.send(msg.encode())
+
+        elif requete_client.lower() ==  "cpu":
+            msg = (platform.processor())
+            client.send(msg.encode())
+
+        elif requete_client.lower() == "hostname":
+            hostname = socket.gethostname()
+            client.send(f"Le hostname est : {hostname}".encode())
+
+        elif requete_client.lower() == "ip":
+            hostname = socket.gethostname()
+            IPAddr = socket.gethostbyname(hostname)
+            client.send(f"L'adresse IP est : {IPAddr}".encode())
+
+        elif requete_client.lower() == "ram":
+            load1, load5, load15 = psutil.getloadavg()
+            cpu_usage = (load15 / os.cpu_count()) * 100
+            print(f"The CPU usage is : {cpu_usage}")
+            client.send(f"The CPU usage is : {cpu_usage}".encode())
+
+    if requete_client.lower() == "disconnect":
+        msg = "Vous vous êtes déconnecter"
+        msg = msg.encode()
+        client.send(msg)
+        print("Le client s'est déconnecté")
+        client.close()
+
+    if requete_client.lower() == "kill":
+        msg = "Le serveur a fermé la socket"
+        msg = msg.encode()
+        client.send(msg)
+        print("Le client a fermé la socket serveur")
+        server_socket.close()
+        client.close()
+
+    if requete_client.lower() == "reset":
+        msg = "Vous avez initié la réinitalisation du serveur"
+        msg = msg.encode()
+        client.send(msg)
+        print("Le client s'est déconnecté")
+        client.close()
+
+if __name__ == '__main__':
+
+    """ Création du server_socket """
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind((Host, Port))
+    server_socket.listen(1)
+    print("En attente d'un client")
+    client, ip = server_socket.accept()
+    print("Le client possédant l'adresse ip :", ip, "s'est connecté")
+
+    """On lance les threads"""
+
+    envoi = Thread(target=Envoi_MSG, args=[client])
+    recep = Thread(target=Reception_MSG, args=[client])
+    recep.start()
+    envoi.start()
+    recep.join()
+    #envoi.join()
